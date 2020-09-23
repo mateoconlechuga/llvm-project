@@ -313,12 +313,14 @@ Z80LegalizerInfo::legalizeShift(LegalizerHelper &Helper,
           getConstantVRegValWithLookThrough(MI.getOperand(2).getReg(), MRI)) {
     if (Ty == LLT::scalar(8) && Amt->Value == 1)
       return LegalizerHelper::AlreadyLegal;
-    if (MI.getOpcode() == G_SHL && Amt->Value == 1) {
-      Helper.Observer.changingInstr(MI);
-      MI.setDesc(Helper.MIRBuilder.getTII().get(G_ADD));
-      MI.getOperand(2).setReg(MI.getOperand(1).getReg());
-      Helper.Observer.changedInstr(MI);
-      return LegalizerHelper::Legalized;
+    if (MI.getOpcode() == G_SHL) {
+      if (Ty == LLT::scalar(24) && Amt->Value <= 7) {
+        bool OptSize = MI.getParent()->getParent()->getFunction().hasOptSize();
+        if (OptSize && (Amt->Value > 7 - (Subtarget.is24Bit() ? 1 : 2))) {
+          return Helper.libcall(MI);
+        }
+        return LegalizerHelper::AlreadyLegal;
+      }
     }
     if (MI.getOpcode() == G_ASHR && Amt->Value == Ty.getSizeInBits() - 1 &&
         (Ty == LLT::scalar(8) || Ty == LLT::scalar(16) ||

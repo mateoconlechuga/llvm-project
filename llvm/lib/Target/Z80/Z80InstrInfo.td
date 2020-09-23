@@ -888,6 +888,12 @@ let AddedComplexity = 1 in {
   def : Pat<(add  A24:$imp, A24:$imp), (ADD24aa A24:$imp)>;
   def : Pat<(shl  A16:$reg,   (i8 1)), (ADD16aa A16:$reg)>;
   def : Pat<(shl  A24:$reg,   (i8 1)), (ADD24aa A24:$reg)>;
+  def : Pat<(shl  A24:$reg,   (i8 2)), (ADD24aa (ADD24aa A24:$reg))>;
+  def : Pat<(shl  A24:$reg,   (i8 3)), (ADD24aa (ADD24aa (ADD24aa A24:$reg)))>;
+  def : Pat<(shl  A24:$reg,   (i8 4)), (ADD24aa (ADD24aa (ADD24aa (ADD24aa A24:$reg))))>;
+  def : Pat<(shl  A24:$reg,   (i8 5)), (ADD24aa (ADD24aa (ADD24aa (ADD24aa (ADD24aa A24:$reg)))))>;
+  def : Pat<(shl  A24:$reg,   (i8 6)), (ADD24aa (ADD24aa (ADD24aa (ADD24aa (ADD24aa (ADD24aa A24:$reg))))))>;
+  def : Pat<(shl  A24:$reg,   (i8 7)), (ADD24aa (ADD24aa (ADD24aa (ADD24aa (ADD24aa (ADD24aa (ADD24aa A24:$reg)))))))>;
   def : Pat<(addc A16:$imp, A16:$imp), (ADD16aa A16:$imp)>;
   def : Pat<(addc A24:$imp, A24:$imp), (ADD24aa A24:$imp)>;
 }
